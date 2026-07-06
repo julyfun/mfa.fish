@@ -37,31 +37,6 @@ function __jst.fs
     __jst.sub __jst.fs $argv
 end
 
-function __jst.ar -d "arxiv"
-    jst open-link https://arxiv.org/abs/(jst paste)
-end
-
-function __jst.alp -d "get alphaxiv link"
-    # https://arxiv.org/abs/1802.01744
-    jst paste | string replace arxiv alphaxiv | jst copy
-end
-
-function __jst.read -d "open alphaxiv and hjfy"
-    set ori (jst paste)
-
-    set id (string match -rg -- 'arxiv/([0-9]+\.[0-9]+)' "$ori")
-    if test -z "$id"
-        set id (string match -rg -- 'abs/([0-9]+\.[0-9]+)' "$ori")
-    end
-    if test -z "$id"
-        set id (string match -rg -- '([0-9]+\.[0-9]+)' "$ori")
-    end
-
-    echo id: $id
-    jst open-link https://hjfy.top/arxiv/$id
-    jst open-link https://alphaxiv.org/abs/$id
-end
-
 function __jst.rdport -d "Get port from given abspath"
     # 49152–65535
     set a (math 0x(echo $argv | sha256sum | cut -c1-8 ))
