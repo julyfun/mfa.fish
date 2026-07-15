@@ -6,6 +6,26 @@ source "$(status dirname)/jst.h.fish"
 # Todo: jst configuration file in ~/.config
 set -gx EDITOR (__jst.get-editor)
 
+function __jst.rg --description "Chain multiple rg commands with -C"
+    argparse 'C/context=' -- $argv
+    or return 1
+    set -l context 5
+    if set -q _flag_C
+        set context $_flag_C
+    end
+    if test (count $argv) -lt 2
+        echo "Usage: rgchain [-C <context>] <file> <term1> [<term2> ...]"
+        return 1
+    end
+    set -l file $argv[1]
+    set -e argv[1]
+    set -l cmd "cat "(string escape -- $file)
+    for term in $argv
+        set cmd $cmd" | rg "(string escape -- $term)" -C "$context
+    end
+    eval $cmd
+end
+
 function __jst.git.show-contrib
     python3 "$JST_DIR/py/git-contrib.py"
 end
@@ -25,7 +45,7 @@ function __jst.fswatch
     end
 end
 
-function __jst.rg
+function __jst.rg1
     rg "\[.*$argv"
 end
 
