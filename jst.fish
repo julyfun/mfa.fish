@@ -6,6 +6,10 @@ source "$(status dirname)/jst.h.fish"
 # Todo: jst configuration file in ~/.config
 set -gx EDITOR (__jst.get-editor)
 
+function __jst.ghostty
+    echo 'export TERM=xterm-256color' | jcp
+end
+
 function __jst.rg --description "Chain multiple rg commands with -C"
     argparse 'C/context=' -- $argv
     or return 1
@@ -210,12 +214,19 @@ function __jst.open
 end
 
 function __jst.today
-    if test -z $argv[1]
-        set f 1
-    else
+    set days 0
+    argparse 'd=' -- $argv; or return
+
+    if set -q _flag_d
+        set days $_flag_d
+    end
+
+    set f 1
+    if test (count $argv) -gt 0
         set f $argv[1]
     end
-    set d (date +%y%m%d)
+
+    set d (date -v -$days"d" +%y%m%d)
     mkdir -p ~/Desktop/$d
     nvim ~/Desktop/$d/$f.md
 end
